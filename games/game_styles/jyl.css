@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.screen {
+    text-align: center;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.b1, .b2, .b3, .b4, .b5, .b6, .b7, .b8, .b9, .b0 {
+    border-radius: 16px;
+    width: 100px;
+    height: 100px;
+    background-color: lightgray;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.b1.active, .b2.active, .b3.active, .b4.active, .b5.active, .b6.active, .b7.active, .b8.active, .b9.active, .b0.active {
+    background-color: green;
+}
+
+.menu {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+a {
+    display: inline-block;
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+p {
+    display: inline;
+}
