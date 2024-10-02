@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerSequence = []; // 存储玩家点击的序列
     let gameActive = false; // 标记游戏是否处于活动状态
     let displayInProgress = false; // 标记显示序列是否正在进行
-    let successAlertShown = false; // 标记成功提示是否已经显示
+    let timeoutIds = []; // 用于存储所有的setTimeout id
 
     // 获取随机索引
     function getRandomIndex(excludeIndices) {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 显示单个按钮
         const display = (index) => {
             highlightButton(sequence[index], true);
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
                 highlightButton(sequence[index], false);
                 if (index === sequence.length - 1) {
                     enableButtons(); // 启用按钮
@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     displayInProgress = false;
                 }
             }, delay);
+            timeoutIds.push(timeoutId);
         };
 
         // 第一轮只高亮两个格子，之后每轮增加一个格子
@@ -74,21 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // 检查玩家序列
     function checkPlayerSequence() {
         if (playerSequence.length === sequence.length && playerSequence.join(',') === sequence.join(',')) {
-            playerSequence = [];
-            level++; // 每过一轮增加一个格子
-            
+            // 清除所有格子的高亮
+            buttons.forEach(button => button.classList.remove('active'));
+
             // 禁用按钮点击，防止在提示框显示期间继续点击
             disableButtons();
 
-            if (!successAlertShown) { // 只显示一次成功提示
-                successAlertShown = true;
-                alert(`成功通关第${level - 1}轮，即将开始下一轮`, () => {
-                    // 清除所有格子的高亮
-                    buttons.forEach(button => button.classList.remove('active'));
-                    showSequence();
-                    successAlertShown = false; // 重置标记
-                });
-            }
+            // 清除所有延时回调
+            timeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+            timeoutIds = [];
+
+            alert(`成功通关第${level - 1}轮，即将开始下一轮`, () => {
+                // 重置所有状态变量
+                level++; // 每过一轮增加一个格子
+                playerSequence = [];
+                gameActive = false;
+                displayInProgress = true;
+                
+                // 清除所有格子的高亮
+                buttons.forEach(button => button.classList.remove('active'));
+                
+                // 开始下一轮游戏
+                showSequence();
+            });
         } else {
             alert('游戏结束！');
             resetGame();
@@ -101,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         level = 2; // 重置为第二轮的配置
         gameActive = false;
         displayInProgress = false;
-        successAlertShown = false;
         
         // 重新启用按钮点击
         enableButtons();
@@ -126,10 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const index = Array.from(buttons).indexOf(event.target);
             playerSequence.push(index);
             highlightButton(index, true);
-            setTimeout(() => {
+
+            // 保存当前的timeoutId以便后续清除
+            const timeoutId = setTimeout(() => {
                 highlightButton(index, false);
                 checkPlayerSequence();
             }, 1000);
+            timeoutIds.push(timeoutId);
         });
     });
 
