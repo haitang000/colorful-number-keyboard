@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerSequence = []; // 存储玩家点击的序列
     let gameActive = false; // 标记游戏是否处于活动状态
     let displayInProgress = false; // 标记显示序列是否正在进行
-    let timeoutIds = []; // 用于存储所有的setTimeout id
+
+    console.log('[LOG][✅] 游戏初始化完成.');
 
     // 获取随机索引
     function getRandomIndex(excludeIndices) {
@@ -25,20 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
         buttons.forEach(button => button.classList.remove('active'));
         disableButtons(); // 禁用按钮
 
+        console.log(`[LOG][🔵] 开始显示序列（级别 ${level}）`);
+
         const delay = 1000; // 每个按钮显示的延迟时间
 
         // 显示单个按钮
         const display = (index) => {
             highlightButton(sequence[index], true);
-            const timeoutId = setTimeout(() => {
+            setTimeout(() => {
                 highlightButton(sequence[index], false);
                 if (index === sequence.length - 1) {
                     enableButtons(); // 启用按钮
                     gameActive = true;
                     displayInProgress = false;
+                    console.log(`[LOG][✅] 序列显示完成，开始接受玩家输入.`);
                 }
             }, delay);
-            timeoutIds.push(timeoutId);
         };
 
         // 第一轮只高亮两个格子，之后每轮增加一个格子
@@ -67,38 +70,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = buttons[index];
         if (isHighlight) {
             button.classList.add('active');
+            console.log(`[LOG][🔵] 高亮按钮 ${index}`);
         } else {
             button.classList.remove('active'); // 恢复原来的颜色
+            console.log(`[LOG][🔵] 移除按钮 ${index} 的高亮`);
         }
     }
 
     // 检查玩家序列
     function checkPlayerSequence() {
         if (playerSequence.length === sequence.length && playerSequence.join(',') === sequence.join(',')) {
+            console.log(`[LOG][✅] 玩家序列与正确序列匹配.`);
             // 清除所有格子的高亮
             buttons.forEach(button => button.classList.remove('active'));
 
             // 禁用按钮点击，防止在提示框显示期间继续点击
             disableButtons();
 
-            // 清除所有延时回调
-            timeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
-            timeoutIds = [];
-
+            // 显示成功的提示，并在关闭提示后开始下一轮游戏
             alert(`成功通关第${level - 1}轮，即将开始下一轮`, () => {
                 // 重置所有状态变量
                 level++; // 每过一轮增加一个格子
                 playerSequence = [];
                 gameActive = false;
                 displayInProgress = true;
-                
+
                 // 清除所有格子的高亮
                 buttons.forEach(button => button.classList.remove('active'));
-                
+
+                // 确保在新的一轮开始之前禁用按钮
+                disableButtons();
+
+                // 输出开始新的一轮的信息
+                console.log(`[LOG][🔵] 开始新的一轮（级别 ${level}）`);
+
                 // 开始下一轮游戏
                 showSequence();
             });
         } else {
+            console.log(`[LOG][❌] 玩家序列与正确序列不匹配, 本轮游戏失败`);
             alert('游戏结束！');
             resetGame();
         }
@@ -106,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 重置游戏
     function resetGame() {
+        console.log('[LOG][🟢] 游戏已重置');
         playerSequence = [];
         level = 2; // 重置为第二轮的配置
         gameActive = false;
@@ -116,10 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 清除所有格子的高亮
         buttons.forEach(button => button.classList.remove('active'));
+        
+        // 这里可以添加一些额外的重置逻辑，例如：
+        // 清除任何定时器或间隔计时器
+        clearInterval(window.setInterval);
+        clearTimeout(window.setTimeout);
     }
 
     // 开始游戏
     function startGame() {
+        console.log('[LOG][🟢] 游戏已开始');
         gameActive = true;
         level = 2; // 设置为第二轮的配置
         playerSequence = [];
@@ -135,12 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
             playerSequence.push(index);
             highlightButton(index, true);
 
-            // 保存当前的timeoutId以便后续清除
-            const timeoutId = setTimeout(() => {
+            console.log(`[LOG][🔵] 玩家点击按钮 ${index}`);
+
+            // 延迟一段时间后移除高亮效果
+            setTimeout(() => {
                 highlightButton(index, false);
-                checkPlayerSequence();
-            }, 1000);
-            timeoutIds.push(timeoutId);
+                if (playerSequence.length === sequence.length) {
+                    checkPlayerSequence();
+                }
+            }, 500); // 可以根据需要调整这个时间，以确保视觉效果
         });
     });
 
@@ -150,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     gamesLink.addEventListener('click', () => {
-        location.href = '/games/';
+        location.href = '/games';
     });
 
     // 页面加载完成后立即开始游戏
@@ -159,10 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 辅助函数：禁用按钮
     function disableButtons() {
         buttons.forEach(button => button.disabled = true);
+        console.log('[LOG][🔵] 按钮被禁用.');
     }
 
     // 辅助函数：启用按钮
     function enableButtons() {
         buttons.forEach(button => button.disabled = false);
+        console.log('[LOG][🔵] 按钮被启用.');
     }
 });
