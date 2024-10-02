@@ -37,6 +37,7 @@ body {
 
 .b1.active, .b2.active, .b3.active, .b4.active, .b5.active, .b6.active, .b7.active, .b8.active, .b9.active, .b0.active {
     background-color: green;
+    scale: 0.9;
 }
 
 .menu {

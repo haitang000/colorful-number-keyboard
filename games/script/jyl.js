@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     gamesLink.addEventListener('click', () => {
-        location.href = '/games';
+        location.href = '/games/';
     });
 
     // 页面加载完成后立即开始游戏
